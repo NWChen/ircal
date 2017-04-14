@@ -47,7 +47,7 @@ def bb_read(tn):
     return float(response)
 
 def bb_set(tn, setpoint):
-    tn.write(setpoint + "\r\n")
+    tn.write("DA" + str(setpoint) + "\r\n")
 
 def bb_get(tn):
     tn.write("M2\r\n")

@@ -68,5 +68,16 @@ def get_data(path):
     else:
         return None
 
+def read_data(f):
+    """ Takes a FileStorage object, and converts it to a list of data. """
+    dialect = csv.Sniffer().sniff(f.read(), delimiters="\t")
+    f.seek(0)
+    header = f.readline()
+    data = list(csv.reader(f, dialect))
+    for row in data:
+        row[0] = datetime.strptime(row[0], '%m/%d/%Y %H:%M:%S.%f')
+        row[1:] = map(float, row[1:])
+    return header, data
+
 if __name__ == '__main__':
     get_data('/home/nwchen/Desktop/ldeo/spring/2014_KT15_82_calib_217_155922.txt')

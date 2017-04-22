@@ -1,4 +1,12 @@
+body {
+    font-family: arial, sans-serif;
+}
+
+.header-label {
+    border: 1px solid black;
+}
+
 #plot {
-    width: 500px
-    height: 500px
+    width: 500px;
+    height: 500px;
 }

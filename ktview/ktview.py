@@ -52,32 +52,20 @@ def bb_set(tn, setpoint):
 def bb_get(tn):
     tn.write("M2\r\n")
 
-def get_data(path):
-    try:
-        with open(path, 'rb') as f:
-            dialect = csv.Sniffer().sniff(f.read(), delimiters="\t")
-            f.seek(0)
-            f.readline()
-            data = list(csv.reader(f, dialect))
-            for row in data:
-                row[0] = datetime.strptime(row[0], '%m/%d/%Y %H:%M:%S.%f')
-                row[1:] = map(float, row[1:])
-            return data
-    except IOError:
-        print "file not found"
-    else:
-        return None
-
 def read_data(f):
     """ Takes a FileStorage object, and converts it to a list of data. """
-    dialect = csv.Sniffer().sniff(f.read(), delimiters="\t")
-    f.seek(0)
-    header = f.readline()
-    data = list(csv.reader(f, dialect))
-    for row in data:
-        row[0] = datetime.strptime(row[0], '%m/%d/%Y %H:%M:%S.%f')
-        row[1:] = map(float, row[1:])
-    return header, data
+    try:
+        dialect = csv.Sniffer().sniff(f.read(), delimiters="\t")
+        f.seek(0)
+        header = f.readline()
+        data = list(csv.reader(f, dialect))
+        for row in data:
+            row[0] = datetime.strptime(row[0], '%m/%d/%Y %H:%M:%S.%f')
+            row[1:] = map(float, row[1:])
+        return header, zip(*data)
+    except Exception as e:
+        print e
+        return None, None
 
 if __name__ == '__main__':
-    get_data('/home/nwchen/Desktop/ldeo/spring/2014_KT15_82_calib_217_155922.txt')
+    print get_data('/home/nwchen/Desktop/ldeo/spring/2014_KT15_82_calib_217_155922.txt')

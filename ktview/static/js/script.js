@@ -1,6 +1,22 @@
 $(document).ready(function() {
     console.log("DOC STARTED");
 
+    $(".header-label").on("click", function(event) {
+        var label = $(event.target)[0].innerText;
+        console.log({ "label" : label });
+        console.log(JSON.stringify({ "label" : label }));
+        $.ajax({
+            url: "/upload",
+            type: "POST",
+            data: JSON.stringify({ "label": label }),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(response) {
+                console.log("Successfully received parameter.");
+            }
+        });
+    });
+
 // Asynchronous (AJAX) file upload
 /*
     $("#input").submit(function(e) {

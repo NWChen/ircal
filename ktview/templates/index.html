@@ -8,19 +8,36 @@
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
             <div class="header">
                 <h1>KT/CT and Blackbody</h1>
             </div>
 
+            <!-- Select columns from data -->
             <div class="row">
                 <div class="col-md-2">
                     <p>Columns</p>
                 </div>
                 <div class="col-md-10">
-                    {% for label in labels %}
-                        <a href="#" class="header-label">{{ label }}</a>
+                    {% for header in headers %}
+                        <a href="#" class="header-label deselected">{{ header }}</a>
                     {% endfor %}
+                </div>
+            </div>
+
+            <!-- KT/CT settings -->
+            <div class="row">
+                <div class="col-md-2">
+                    <p>Sample rate (Hz)</p>
+                    <input type="number" name="samplerate"/>
+                </div>
+                <div class="col-md-2">
+                    <p>Sample period (s)</p>
+                    <input type="number" name="sampleperiod"/>
+                </div>
+                <div class="col-md-2">
+                    <p>Stabilization period (s)</p>
+                    <input type="number" name="stabperiod"/>
                 </div>
             </div>
 

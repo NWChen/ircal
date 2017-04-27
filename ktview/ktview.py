@@ -52,6 +52,11 @@ def bb_set(tn, setpoint):
 def bb_get(tn):
     tn.write("M2\r\n")
 
+def _unix_time_millis(dt):
+    SCALING_FACTOR = 1.0  # 1000.0
+    epoch = datetime.utcfromtimestamp(0)
+    return (dt - epoch).total_seconds() * SCALING_FACTOR
+
 def read_data(f):
     """ Takes a FileStorage object, and converts it to a list of data. """
     try:
@@ -59,8 +64,10 @@ def read_data(f):
         f.seek(0)
         header = f.readline()
         data = list(csv.reader(f, dialect))
+        date_format = '%m/%d/%Y %H:%M:%S.%f'
+        min_time = _unix_time_millis(datetime.strptime(data[0][0], date_format))
         for row in data:
-            row[0] = datetime.strptime(row[0], '%m/%d/%Y %H:%M:%S.%f')
+            row[0] = _unix_time_millis(datetime.strptime(row[0], date_format)) - min_time
             row[1:] = map(float, row[1:])
         return header, zip(*data)
     except Exception as e:
@@ -68,4 +75,6 @@ def read_data(f):
         return None, None
 
 if __name__ == '__main__':
-    print get_data('/home/nwchen/Desktop/ldeo/spring/2014_KT15_82_calib_217_155922.txt')
+    file = '/home/nwchen/Desktop/ldeo/spring/2014_KT15_82_calib_217_155922.txt'
+    f = open(file, 'r')
+    print read_data(f)

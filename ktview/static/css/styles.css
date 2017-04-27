@@ -1,9 +1,14 @@
 body {
+    color: black;
     font-family: arial, sans-serif;
 }
 
 .header-label {
     border: 1px solid black;
+}
+
+.selected {
+    color: green;
 }
 
 #plot {

@@ -1,0 +1,53 @@
+<html>
+   <head>
+        <title>KTView</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="header">
+                <h1>KT/CT and Blackbody</h1>
+            </div>
+
+            <!-- Select columns from data -->
+            <div class="row">
+                <div class="col-md-2">
+                    <p>Columns</p>
+                </div>
+                <div class="col-md-10">
+                    {% for header in headers %}
+                        <a href="#" class="header-label deselected">{{ header }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- KT/CT settings -->
+            <div class="row">
+                <div class="col-md-2">
+                    <p>Sample rate (Hz)</p>
+                    <input type="number" name="samplerate"/>
+                </div>
+                <div class="col-md-2">
+                    <p>Sample period (s)</p>
+                    <input type="number" name="sampleperiod"/>
+                </div>
+                <div class="col-md-2">
+                    <p>Stabilization period (s)</p>
+                    <input type="number" name="stabperiod"/>
+                </div>
+            </div>
+
+        <div id="plot"></div> 
+
+        <form action="/" id="input" method="post" name="input" enctype="multipart/form-data">
+            <input id="file" type="file" name="file" multiple/>
+            <input id="upload" type="submit" name="upload" value="Upload"/>
+        </form>
+        
+        </div>
+    </body>
+</html>

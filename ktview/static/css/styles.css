@@ -11,7 +11,7 @@ body {
     color: green;
 }
 
-#plot {
-    width: 500px;
+#canvas {
+    width: 50%;
     height: 500px;
 }

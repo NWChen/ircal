@@ -4,5 +4,5 @@ kt15-calibration plots the output of a blackbody/KT/CT setup in real time, or fr
 
 ## Setup
 ```
-python ktview.py
+python application.py
 ```

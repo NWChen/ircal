@@ -8,13 +8,6 @@
     </head>
 
     <body>
-        <div>
-            {% for header in headers %}
-                <form action="/" method="post">
-                    <input type="submit" name="{{ header }}"/>{{ header }}
-                </form>
-            {% endfor %}
-        </div>
         <div id="canvas"></div>
         <div>
             <form action="/" method="post" name="input" enctype="multipart/form-data">
@@ -24,14 +17,26 @@
         </div>
 
         <script type="text/javascript">
+            var dps = [];
             var chart = new CanvasJS.Chart("canvas", {
                 axisY: {
                     includeZero: false
                 },
-                data:
-                    {{ dataSeries|safe }}
+                data: [{
+                    type: "line",
+                    dataPoints: dps
+                }]
             });
-            chart.render();
+
+            var updateChart = function() {
+                $.getJSON('/live_update', function(response){
+                    dps.push(response)
+                });
+                chart.render();
+            };
+            setInterval(function() {
+                updateChart()
+            }, 100);
         </script>
     </body>
 </html>

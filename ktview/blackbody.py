@@ -10,11 +10,12 @@ class Blackbody(object):
         """ Creates a Blackbody object. Assumes the device is already connected. """
         if debug:
             self.debug = True
-        try:
-            ip_addr, port = "192.168.200.161", "7788"
-            self.tn = telnetlib.Telnet(ip_addr, port, timeout)
-        except Exception:
-            self._die("IP  or port not recognized. Please check your connection and try again.")
+        else:
+            try:
+                ip_addr, port = "192.168.200.161", "7788"
+                self.tn = telnetlib.Telnet(ip_addr, port, timeout)
+            except Exception:
+                self._die("IP  or port not recognized. Please check your connection and try again.")
 
     def _die(self, message):
         sys.exit(message)

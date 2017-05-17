@@ -6,16 +6,17 @@ from random import randint
 class Ktct(object):
     """ Encapsulates a KT/CT serial driver. The only functionality included is requesting absolute temperature. """
 
-    def __init__(self, port, debug=False):
+    def __init__(self, port=None, debug=False):
         """ A valid USB port is expected; the driver will terminate otherwise. """
         if debug:
             self.debug = True
-        try:
-            self.ser = serial.Serial(port, timeout=0)
-        except serial.SerialException:
-            self._die(port + " is not connected. Please try a different USB port.")
-        if self.ser is None:
-            self._die("Serial connection detected but failed. Please try a different USB port.")
+        else:
+            try:
+                self.ser = serial.Serial(port, timeout=0)
+            except serial.SerialException:
+                self._die(port + " is not connected. Please try a different USB port.")
+            if self.ser is None:
+                self._die("Serial connection detected but failed. Please try a different USB port.")
 
     def _die(self, message):
         sys.exit(message)

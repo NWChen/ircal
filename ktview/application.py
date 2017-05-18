@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify, url_for, g
 from data_handler import DataHandler
 from ktct import Ktct
 from blackbody import Blackbody
@@ -24,14 +24,18 @@ def index():
 def live_update():
     abs_temp = bb.read()
     exp_temp = ktct.read()
-    time = DataHandler().millisecond_timedelta(start_time, datetime.now())
+    time = DataHandler().millisecond_timedelta(g.start_time, datetime.now())
     return jsonify(x=time, y=abs_temp)
 
 @app.route('/live')
 def live():
-    global start_time
-    start_time = datetime.now()
-    return render_template('live.html')
+    g.start_time = datetime.now()
+    sensors = []
+    return render_template('live.html', sensors=sensors)
+
+@app.route('/init_ktct')
+def init_ktct():
+    pass
 
 def _prepare_data(dh, headers):
     data_series = [{'type': 'line', \

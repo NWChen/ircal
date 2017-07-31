@@ -1,4 +1,3 @@
-import sys
 import serial
 
 class Radiometer():

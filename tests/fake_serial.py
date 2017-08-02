@@ -1,4 +1,5 @@
 from serial import Serial, SerialException
+from itertools import chain
 
 class Responder():
     """Generates mock KT/CT output given environment information."""
@@ -12,17 +13,18 @@ class Responder():
             if ord(token) > 127: # KT/CT only accepts ASCII characters.
                 break
             self.query.append(token)
-        else if len(query) <= 40: # KT/CT has a 40-character input buffer.
-            return True
+        else:
+            if len(query) <= 40: # KT/CT has a 40-character input buffer.
+                return True
         return False
 
     def respond():
-         
+        pass 
 
-class FakeSerial(Serial):
+class FakeSerial():#Serial):
     """Simulates generic serial device behavior."""
 
-    def __init__(self, port, baudrate=9600, timeout=0.2)
+    def __init__(self, port, baudrate=9600, timeout=0.2):
         """Create a mock serial object.
             :param port: Serial port, we don't really care what format.
             :type port: String
@@ -30,10 +32,14 @@ class FakeSerial(Serial):
         self.name = self.port = port
         self.responder = Responder() # Delegate generating KT/CT-like responses to a separate object. Whenever mock KT/CT command output is desired, a call to self.responder should be made.
         self.output_buffer = self.input_buffer = []
+        self.is_open = True
 
     def __getattribute__(self, attr):
-        if not self.is_open:
-            raise SerialException("Cannot write, serial connection is not open.")
+        """Checks whether this connection is open prior to any member/function call. This is less invasive than checking for self.is_open in every function call.
+        """
+        if attr != 'is_open':
+            if not self.is_open:
+                raise SerialException("Cannot write, serial connection is not open.")
         return object.__getattribute__(self, attr)
 
     def readline(self):
@@ -41,12 +47,11 @@ class FakeSerial(Serial):
             :returns: Fake response corresponding to the input query specified by a write().
             :rtype: String
         """
-        try:
-            newline = self.output_buffer.index('\n')
-            return ''.join(self.output_buffer.pop
-        except ValueError:
-            sleep(self.timeout)
-          
+        tokens = self.output_buffer.split('\n')
+        response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
+        if tokens:
+            return tokens
+        sleep(timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
 
     def write(self, query):
         """Accept a query and generate potential responses, to be consumed in readline().

@@ -1,5 +1,9 @@
 language: python
 
+install:
+    - "pip install pylint"
+    - "pip install -r requirements.txt"
+
 python:
     - "2.7"
 

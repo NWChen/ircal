@@ -3,12 +3,10 @@ import serial
 class Radiometer():
     """A wrapper and Python interface for KT/CT-15 radiometer commands."""
 
-    port = ""
-
-    def __init__(self, port):
+    def __init__(self, ser):
         """Establish a serial connection to a radiometer.
-            :param port: USB port radiometer is plugged into. On Windows, this is a COM## port; on macOS, this is /dev/cu.usbserial-##; on Linux, this is /dev/tty/##.
-            :type port: String
+            :param port: Serial object with a unique port. On Windows, this is a COM## port; on macOS, this is /dev/cu.usbserial-##; on Linux, this is /dev/tty/##.
+            :type port: serial.Serial
         """
         pass
 

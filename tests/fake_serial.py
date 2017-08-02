@@ -1,5 +1,19 @@
 from serial import Serial
-from response_generator import ResponseGenerator
+
+class Responder():
+    """Generates mock KT/CT output given environment information."""
+
+    def __init__(self):
+        
+        self.bkgd_temp = 25         
+        self.query = []
+
+    def _process_query(self, query):
+        self.query.append(query[:3])
+        self.query.extend(query.split()[1:]) 
+
+    def respond():
+        
 
 class FakeSerial(Serial):
     """A mock class for serial device behavior."""
@@ -11,7 +25,7 @@ class FakeSerial(Serial):
         """
         self.name = self.port = port
         self.baudrate = 9600
-        self.response_generator = ResponseGenerator()
+        self.responder = Responder() # Delegate generating KT/CT-like responses to a separate object. Whenever mock KT/CT command output is desired, a call to self.responder should be made.
 
     def readline(self):
         """Provide a mock response from the serial object.
@@ -25,6 +39,7 @@ class FakeSerial(Serial):
             :param query: Input string usually sent to a serial object.
             :type query: String
         """
+        
         
     
     def open(self):

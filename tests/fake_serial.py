@@ -1,4 +1,5 @@
 from serial import Serial
+from response_generator import ResponseGenerator
 
 class FakeSerial(Serial):
     """A mock class for serial device behavior."""
@@ -8,7 +9,9 @@ class FakeSerial(Serial):
             :param port: Serial port, we don't really care what format.
             :type port: String
         """
-        self.port = port
+        self.name = self.port = port
+        self.baudrate = 9600
+        self.response_generator = ResponseGenerator()
 
     def readline(self):
         """Provide a mock response from the serial object.
@@ -22,8 +25,10 @@ class FakeSerial(Serial):
             :param query: Input string usually sent to a serial object.
             :type query: String
         """
-        pass
+        
+    
+    def open(self):
+        self.is_open = True
 
-    def is_open(self):
-        """Describe whether this serial connection is open."""
-        pass 
+    def close(self):
+        self.is_open = False

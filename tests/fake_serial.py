@@ -9,21 +9,20 @@ class Responder():
     """Generates mock KT/CT output given environment information."""
 
     def __init__(self):
-        """Create a mock KT/CT response generator.
-        """
+        """Create a mock KT/CT response generator."""
         self.device_values = {
-            'temp': 25.0,
-            'rad': 0.0,
+            'temp': '25.0',
+            'rad': '0.0',
             'unit': 'C',
-            'calibration_factor': 2.0,
+            'calibration_factor': '2.0',
         }
         self.language = {
-            '^CAL ?$': (lambda settings, device_values: device_values['calibration_factor']),
-            '^CAL (\d+[.]\d*))$': (lambda settings, device_values: device_values.update({'calibration_factor': float(settings.group()[0])})),
-            '^TEMP$': (lambda settings, device_values: device_values['temp']),
-            '^RAD$': (lambda settings, device_values: device_values['rad']),
-            '^UNIT ?$': (lambda settings, device_values: device_values['unit']),
-            '^UNIT ([K|C|F])$': (lambda settings, device_values: device_values.update({'unit': settings.group()[0]}))
+            'CAL ?': (lambda settings, device_values: device_values['calibration_factor']),
+            'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group()[0]})),
+            'TEMP': (lambda settings, device_values: device_values['temp']),
+            'RAD': (lambda settings, device_values: device_values['rad']),
+            'UNIT ?': (lambda settings, device_values: device_values['unit']),
+            'UNIT ([K|C|F])': (lambda settings, device_values: device_values.update({'unit': settings.group()[0]}))
         }
         self.query = []
 
@@ -51,13 +50,13 @@ class Responder():
                     return True
         return False
 
-    def respond():
+    def respond(self):
         """Simulates the corresponding KT/CT response for a given query.
             :returns: The expected KT/CT output according to the Heitronics spec.
             :rtype: String
         """
         for command, response in self.language.items():
-            settings = re.match(command, self.query)
+            settings = re.match(command, ''.join(self.query))
             if settings:
                 return response(settings, self.device_values)
         raise SerialException("ERROR 19: CAN'T DO IT")
@@ -105,7 +104,7 @@ class FakeSerial(Serial):
             tokens = self.output_buffer.split('\n')
             response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
             return response
-        sleep(self._timeout()) # Just like a real serial connection, block until EOF/EOL or timeout elapsed. We could choose to include the 1/10 failure rate here, but I chose not to.
+        sleep(self.timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
 
     @check_connection
     def write(self, query):
@@ -113,20 +112,18 @@ class FakeSerial(Serial):
             :param query: Input string usually sent to a serial object.
             :type query: String
         """
-        self.input_buffer.append(query.split(''))
+        self.input_buffer.extend(list(query))
         if self.responder.ask(self.input_buffer):
-            self.output_buffer.append(self.responder.respond().split(''))
+            self.output_buffer.extend(list(self.responder.respond()))
         else:
             raise SerialException("Invalid input query.")
-
+    
     @check_connection
     def open(self):
-        """Pretends to open a serial connection.
-        """
+        """Pretends to open a serial connection."""
         self._is_open = True
 
     @check_connection
     def close(self):
-        """Pretends to close a serial connection.
-        """
+        """Pretends to close a serial connection."""
         self._is_open = False

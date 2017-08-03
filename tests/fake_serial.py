@@ -1,8 +1,9 @@
-from serial import Serial, SerialException
-from itertools import chain
-from random import randint
-from functools import wraps
 import re
+from time import sleep
+from functools import wraps
+from random import randint
+from itertools import chain
+from serial import Serial, SerialException
 
 class Responder():
     """Generates mock KT/CT output given environment information."""
@@ -99,10 +100,11 @@ class FakeSerial(Serial):
             :returns: Fake response corresponding to the input query specified by a write().
             :rtype: String
         """
-        tokens = self.output_buffer.split('\n')
-        response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
-        if tokens:
-            return tokens
+        tokens = []
+        if self.output_buffer:
+            tokens = self.output_buffer.split('\n')
+            response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
+            return response
         sleep(self._timeout()) # Just like a real serial connection, block until EOF/EOL or timeout elapsed. We could choose to include the 1/10 failure rate here, but I chose not to.
 
     @check_connection
@@ -116,7 +118,7 @@ class FakeSerial(Serial):
             self.output_buffer.append(self.responder.respond().split(''))
         else:
             raise SerialException("Invalid input query.")
- 
+
     @check_connection
     def open(self):
         """Pretends to open a serial connection.

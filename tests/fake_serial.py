@@ -8,7 +8,26 @@ class Responder():
     def __init__(self):
         """Create a mock KT/CT response generator.
         """
-        self.bkgd_temp = 25         
+        self.device_values = {
+            'temp': 25.0,
+            'rad': 0.0,
+            'unit': 'C',
+            'calibration_factor': 2.0
+        }
+        self.language = {
+            '^CAL ?$': (lambda settings, device_values:
+                            device_values['calibration_factor']),
+            '^CAL (\d+[.]\d*))$': (lambda settings, device_values: 
+                            device_values.update({'calibration_factor': float(settings.group()[0])})),
+            '^TEMP$': (lambda settings, device_values:
+                            device_values['temp']),
+            '^RAD$': (lambda settings, device_values:
+                            device_values['rad']),
+            '^UNIT ?$': (lambda settings, device_values:
+                            device_values['unit']),
+            '^UNIT ([K|C|F])$': (lambda settings, device_values:
+                            device_values.update({'unit': settings.group()[0]}))
+        }
         self.query = []
 
     def _timeout(self):
@@ -36,7 +55,15 @@ class Responder():
         return False
 
     def respond():
-        pass 
+        """Simulates the corresponding KT/CT response for a given query.
+            :returns: The expected KT/CT output according to the Heitronics spec.
+            :rtype: String
+        """
+        for command, response in self.language.items():
+            settings = re.match(command, self.query)
+            if settings:
+                return response(settings, self.device_values)
+        raise SerialException("ERROR 19: CAN'T DO IT") 
 
 class FakeSerial():#Serial):
     """Simulates generic serial device behavior.

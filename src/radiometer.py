@@ -34,7 +34,7 @@ class Radiometer():
         pass
 
     def get_radiation(self):
-        """Grab the instantaneeous measured radiation of the radiometer.
+        """Grab the instantaneous measured radiation of the radiometer.
             :returns: Temperature in Celsius.
             :rtype: float
         """

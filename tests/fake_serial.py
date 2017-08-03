@@ -12,7 +12,7 @@ class Responder():
             'temp': 25.0,
             'rad': 0.0,
             'unit': 'C',
-            'calibration_factor': 2.0
+            'calibration_factor': 2.0,
         }
         self.language = {
             '^CAL ?$': (lambda settings, device_values:
@@ -100,7 +100,7 @@ class FakeSerial():#Serial):
         response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
         if tokens:
             return tokens
-        sleep(timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
+        sleep(self._timeout()) # Just like a real serial connection, block until EOF/EOL or timeout elapsed. We could choose to include the 1/10 failure rate here, but I chose not to.
 
     def write(self, query):
         """Accept a query and generate potential responses, to be consumed in readline().

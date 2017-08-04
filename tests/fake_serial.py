@@ -101,7 +101,6 @@ class FakeSerial(Serial):
         if self.output_buffer:
             eol = self.output_buffer.index('\n') + 1
             response, self.output_buffer = self.output_buffer[:eol], self.output_buffer[eol:] 
-            import pdb; pdb.set_trace()
             return ''.join(response)
         sleep(self.timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
 

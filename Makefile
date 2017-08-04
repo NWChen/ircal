@@ -10,5 +10,10 @@ clean-pyc:
 lint:
 	pylint $(TEST_PATH)/*.py
 
+docs:
+	pdoc --html src/*.py
+	pdoc --html tests/*.py
+	mv ./*.html docs/
+
 test:
 	python $(TEST_PATH)/__init__.py

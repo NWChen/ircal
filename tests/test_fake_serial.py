@@ -33,8 +33,16 @@ class FakeSerialTestCase(unittest.TestCase):
         expected_responses = ['', '']
         self._compare_all_messages(queries, expected_responses)
 
+    def test_aggregation(self):
+        queries = ['CAL 3.14\n', 'CAL ?\n', 'UNIT ?\n', 'UNIT F\n', 'UNIT ?\n']
+        for query in queries:
+            self.serial.write(query)
+        self.assertEqual(self.serial.readline(), '3.14\n')
+        self.assertEqual(self.serial.readline(), 'C\n')
+        self.assertEqual(self.serial.readline(), 'F\n') 
+
 def get_tests():
-    tests = ['test_interrogation', 'test_command']
+    tests = ['test_interrogation', 'test_command', 'test_aggregation']
     return unittest.TestSuite(map(FakeSerialTestCase, tests))
 
 if __name__ == '__main__':

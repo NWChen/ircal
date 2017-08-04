@@ -48,8 +48,17 @@ class FakeSerialTestCase(unittest.TestCase):
         self.serial.open()
         self.assertTrue(self.serial.is_open)
 
+    def test_invalid_query(self):
+        try:
+            self.serial.write('CAL')
+            self.serial.readline()
+        except SerialException:
+            pass
+        else:
+            self.fail('Exception not raised.')
+
 def get_tests():
-    tests = ['test_interrogation', 'test_command', 'test_aggregation', 'test_connection']
+    tests = ['test_interrogation', 'test_command', 'test_aggregation', 'test_connection', 'test_invalid_query']
     return unittest.TestSuite(map(FakeSerialTestCase, tests))
 
 if __name__ == '__main__':

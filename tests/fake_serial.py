@@ -15,6 +15,8 @@ class Responder():
             'unit': 'C',
             'calibration_factor': '2.0',
         }
+
+        # Add new commands here. Each command is supported by the syntax <regex>: <response function>. Values, like temperature, can be parsed using the settings.group() function.
         self.language = {
             'CAL \?': (lambda settings, device_values: device_values['calibration_factor']),
             'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group(1)})),

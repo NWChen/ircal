@@ -27,7 +27,7 @@ $ make
     $ make docs
     ```
 - ```/src``` contains all source files, including KT/CT and blackbody drivers and dashboard code.
-- ```/test``` contains all unit tests for this project. It also includes mock (simulated) ```Serial``` and ```Telnet``` objects for testing without a radiometer/blackbody attached. If you make a change and would like to test it prior to deploying the application, then:
+- ```/tests``` contains all unit tests for this project. It also includes mock (simulated) ```Serial``` and ```Telnet``` objects for testing without a radiometer/blackbody attached. If you make a change and would like to test it prior to deploying the application, then:
     ```bash
     $ cd ircal
     $ make test

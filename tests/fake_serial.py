@@ -16,11 +16,11 @@ class Responder():
             'calibration_factor': '2.0',
         }
         self.language = {
-            'CAL ?': (lambda settings, device_values: device_values['calibration_factor']),
+            'CAL \?': (lambda settings, device_values: device_values['calibration_factor']),
             'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group()[0]})),
             'TEMP': (lambda settings, device_values: device_values['temp']),
             'RAD': (lambda settings, device_values: device_values['rad']),
-            'UNIT ?': (lambda settings, device_values: device_values['unit']),
+            'UNIT \?': (lambda settings, device_values: device_values['unit']),
             'UNIT ([K|C|F])': (lambda settings, device_values: device_values.update({'unit': settings.group()[0]}))
         }
         self.query = []
@@ -57,7 +57,10 @@ class Responder():
         for command, response in self.language.items():
             settings = re.match(command, ''.join(self.query))
             if settings:
-                return '%s\n' % response(settings, self.device_values)
+                res = response(settings, self.device_values)
+                if res:
+                    return res + '\n'
+                return ''
         raise SerialException("ERROR 19: CAN'T DO IT")
 
 class FakeSerial(Serial):
@@ -100,9 +103,10 @@ class FakeSerial(Serial):
         """
         if self.output_buffer:
             eol = self.output_buffer.index('\n') + 1
-            response, self.output_buffer = self.output_buffer[:eol], self.output_buffer[eol:] 
+            response, self.output_buffer = self.output_buffer[:eol], self.output_buffer[eol:]
             return ''.join(response)
         sleep(self.timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
+        return ''
 
     @check_connection
     def write(self, query):

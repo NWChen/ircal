@@ -17,11 +17,11 @@ class Responder():
         }
         self.language = {
             'CAL \?': (lambda settings, device_values: device_values['calibration_factor']),
-            'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group()[0]})),
+            'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group(1)})),
             'TEMP': (lambda settings, device_values: device_values['temp']),
             'RAD': (lambda settings, device_values: device_values['rad']),
             'UNIT \?': (lambda settings, device_values: device_values['unit']),
-            'UNIT ([K|C|F])': (lambda settings, device_values: device_values.update({'unit': settings.group()[0]}))
+            'UNIT ([K|C|F])': (lambda settings, device_values: device_values.update({'unit': settings.group(1)}))
         }
         self.query = []
 
@@ -76,8 +76,7 @@ class FakeSerial(Serial):
         """
         super(FakeSerial, self).__init__()
         self.name, self.port = port, port
-        self.responder = Responder() # Delegate generating KT/CT-like responses to a separate object.
-                                     # Whenever mock KT/CT command output is desired, a call to self.responder should be made.
+        self.responder = Responder() # Delegate generating KT/CT-like responses to a separate object. Whenever mock KT/CT command output is desired, a call to self.responder should be made.
         self.output_buffer, self.input_buffer = [], []
         self.baudrate = baudrate
         self.timeout = timeout
@@ -116,9 +115,10 @@ class FakeSerial(Serial):
         """
         self.input_buffer.extend(list(query))
         if self.responder.ask(self.input_buffer):
-            del self.input_buffer[:] 
             self.output_buffer.extend(list(self.responder.respond()))
+            del self.input_buffer[:]
         else:
+            del self.input_buffer[:]
             raise SerialException("Invalid input query.")
     
     @check_connection

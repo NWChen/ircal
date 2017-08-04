@@ -21,13 +21,13 @@ $ make
 
 ## App Structure
 
-- ```docs``` contains project documentation generated automatically by pdoc from docstrings in source files. If you would like to regenerate documentation, then:
+- ```/docs``` contains project documentation generated automatically by pdoc from docstrings in source files. If you would like to regenerate documentation, then:
     ```bash
     $ cd ircal
     $ make docs
     ```
-- ```src``` contains all source files, including KT/CT and blackbody drivers and dashboard code.
-- ```test``` contains all unit tests for this project. If you make a change and would like to test it prior to deploying the application, then:
+- ```/src``` contains all source files, including KT/CT and blackbody drivers and dashboard code.
+- ```/test``` contains all unit tests for this project. It also includes mock (simulated) ```Serial``` and ``Telnet``` objects for testing without a radiometer/blackbody attached. If you make a change and would like to test it prior to deploying the application, then:
     ```bash
     $ cd ircal
     $ make test

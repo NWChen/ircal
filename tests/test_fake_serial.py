@@ -1,6 +1,7 @@
 import unittest
 import sys
 from fake_serial import FakeSerial
+from serial import SerialException
 from itertools import izip
 
 class FakeSerialTestCase(unittest.TestCase):
@@ -41,8 +42,14 @@ class FakeSerialTestCase(unittest.TestCase):
         self.assertEqual(self.serial.readline(), 'C\n')
         self.assertEqual(self.serial.readline(), 'F\n') 
 
+    def test_connection(self):
+        self.serial.close()
+        self.assertRaises(SerialException, self.serial.write, 'test')
+        self.serial.open()
+        self.assertTrue(self.serial.is_open)
+
 def get_tests():
-    tests = ['test_interrogation', 'test_command', 'test_aggregation']
+    tests = ['test_interrogation', 'test_command', 'test_aggregation', 'test_connection']
     return unittest.TestSuite(map(FakeSerialTestCase, tests))
 
 if __name__ == '__main__':

@@ -2,7 +2,6 @@ import re
 from time import sleep
 from functools import wraps
 from random import randint
-from itertools import chain
 from serial import Serial, SerialException
 
 class Responder():
@@ -32,14 +31,14 @@ class Responder():
             :rtype: bool
         """
         sleep(randint(50, 500)/1000.0)
-        failure_guess = randint(0, 10) # To be cautious, assume 1 in 10 serial messages will fail to deliver.
-        return failure_guess != 10
+        return True
 
     def ask(self, query):
         """Simulates receiving and processing an input query.
             :returns: True if the query was accepted, False if an error was found.
             :rtype: bool
         """
+        del self.query[:]
         if self._timeout():
             for token in query:
                 if ord(token) > 127: # KT/CT only accepts ASCII characters.
@@ -58,7 +57,7 @@ class Responder():
         for command, response in self.language.items():
             settings = re.match(command, ''.join(self.query))
             if settings:
-                return response(settings, self.device_values)
+                return '%s\n' % response(settings, self.device_values)
         raise SerialException("ERROR 19: CAN'T DO IT")
 
 class FakeSerial(Serial):
@@ -73,10 +72,10 @@ class FakeSerial(Serial):
             :type port: String
         """
         super(FakeSerial, self).__init__()
-        self.name = self.port = port
+        self.name, self.port = port, port
         self.responder = Responder() # Delegate generating KT/CT-like responses to a separate object.
                                      # Whenever mock KT/CT command output is desired, a call to self.responder should be made.
-        self.output_buffer = self.input_buffer = []
+        self.output_buffer, self.input_buffer = [], []
         self.baudrate = baudrate
         self.timeout = timeout
         self.is_open = True
@@ -99,11 +98,11 @@ class FakeSerial(Serial):
             :returns: Fake response corresponding to the input query specified by a write().
             :rtype: String
         """
-        tokens = []
         if self.output_buffer:
-            tokens = self.output_buffer.split('\n')
-            response, self.output_buffer = tokens[0], list(chain.from_iterable(tokens[1]))
-            return response
+            eol = self.output_buffer.index('\n') + 1
+            response, self.output_buffer = self.output_buffer[:eol], self.output_buffer[eol:] 
+            import pdb; pdb.set_trace()
+            return ''.join(response)
         sleep(self.timeout) # Just like a real serial connection, block until EOF/EOL or timeout elapsed.
 
     @check_connection
@@ -114,6 +113,7 @@ class FakeSerial(Serial):
         """
         self.input_buffer.extend(list(query))
         if self.responder.ask(self.input_buffer):
+            del self.input_buffer[:] 
             self.output_buffer.extend(list(self.responder.respond()))
         else:
             raise SerialException("Invalid input query.")

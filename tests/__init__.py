@@ -11,5 +11,5 @@ if __name__ == '__main__':
         for test in all_tests:
             unittest.TextTestRunner().run(test)
         sys.exit(0)
-    except:
+    except Exception:
         sys.exit(1)

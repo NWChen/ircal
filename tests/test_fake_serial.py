@@ -1,4 +1,5 @@
 import unittest
+import sys
 from fake_serial import FakeSerial
 from itertools import izip
 
@@ -16,16 +17,24 @@ class FakeSerialTestCase(unittest.TestCase):
         self.serial.write(command)
         return self.serial.readline()
 
+    def _compare_all_messages(self, queries, expected_responses):
+        for query, expected_response in izip(queries, expected_responses):
+            response = self._send_and_respond(query)
+            print "QUERY: %s | RESPONSE: %s"%(query, response)
+            self.assertEqual(response, expected_response)
+
     def test_interrogation(self):
         queries = ['CAL ?\n', 'TEMP\n', 'RAD\n', 'UNIT ?\n']
         expected_responses = ['2.0\n', '25.0\n', '0.0\n', 'C\n']
-        for query, expected_response in izip(queries, expected_responses):
-            response = self._send_and_respond(query)
-            print query, response, expected_response
-            self.assertEqual(response, expected_response)
+        self._compare_all_messages(queries, expected_responses)
+
+    def test_command(self):
+        queries = ['CAL 1.56\n', 'UNIT K\n']
+        expected_responses = ['', '']
+        self._compare_all_messages(queries, expected_responses)
 
 def get_tests():
-    tests = ['test_interrogation']
+    tests = ['test_interrogation', 'test_command']
     return unittest.TestSuite(map(FakeSerialTestCase, tests))
 
 if __name__ == '__main__':

@@ -18,12 +18,12 @@ class Responder():
 
         # Add new commands here. Each command is supported by the syntax <regex>: <response function>. Values, like temperature, can be parsed using the settings.group() function.
         self.language = {
-            'CAL \?': (lambda settings, device_values: device_values['calibration_factor']),
-            'CAL (\d+[.]\d*)': (lambda settings, device_values: device_values.update({'calibration_factor': settings.group(1)})),
-            'TEMP': (lambda settings, device_values: device_values['temp']),
-            'RAD': (lambda settings, device_values: device_values['rad']),
-            'UNIT \?': (lambda settings, device_values: device_values['unit']),
-            'UNIT ([K|C|F])': (lambda settings, device_values: device_values.update({'unit': settings.group(1)}))
+            'CAL \?': (lambda settings: self.device_values['calibration_factor']),
+            'CAL (\d+[.]\d*)': (lambda settings: self.device_values.update({'calibration_factor': settings.group(1)})),
+            'TEMP': (lambda settings: self.device_values['temp']),
+            'RAD': (lambda settings: self.device_values['rad']),
+            'UNIT \?': (lambda settings: self.device_values['unit']),
+            'UNIT ([K|C|F])': (lambda settings: self.device_values.update({'unit': settings.group(1)}))
         }
         self.query = []
 
@@ -59,7 +59,7 @@ class Responder():
         for command, response in self.language.items():
             settings = re.match(command, ''.join(self.query))
             if settings:
-                res = response(settings, self.device_values)
+                res = response(settings)
                 if res:
                     return res + '\n'
                 return ''

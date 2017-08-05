@@ -7,6 +7,7 @@ class Daemon(threading.Thread):
     """A fake telnet server emulating a blackbody emitter controller."""
 
     def __init__(self, (socket, addr)):
+        """Creates a fake telnet server which mimics blackbody response behavior."""
         threading.Thread.__init__(self)
         self.socket = socket
         self.addr = addr
@@ -23,6 +24,9 @@ class Daemon(threading.Thread):
         self._timeout = 0.2
 
     def update(self):
+        """Updates blackbody temperature.
+            This method only runs in its own thread, so that requests from a telnet client can be processed at the same time.
+        """
         temp = float(self.device_values.get('temp'))
         setpoint = float(self.device_values.get('setpoint'))
         while temp < setpoint - 0.1 or temp > setpoint + 0.1:
@@ -35,10 +39,19 @@ class Daemon(threading.Thread):
         return
 
     def begin_updating(self, settings):
+        """Begins updating temperature in response to a change in setpoint.
+            Launches a separate thread for calls to update().
+            :param settings: A regular expression containing parsed query information.
+            :type settings: MatchObject
+        """
         self.device_values.update({'setpoint': settings.group(1)})
         threading.Thread(target=self.update).start() 
 
     def handle(self, data):
+        """Processes appropriate responses from the language dictionary.
+            :param data: Query sent by the user (telnet client).
+            :type data: String
+        """
         for command, response in self.language.items():
             settings = re.match(command, data)
             if settings:
@@ -48,6 +61,7 @@ class Daemon(threading.Thread):
         return ''
 
     def run(self):
+        """Main method of this thread. Establishes communication with a telnet client."""
         self.socket.send("SUCCESSFULLY CONNECTED.\n")
         while(True):
             data = self.socket.recv(1024)
@@ -56,6 +70,7 @@ class Daemon(threading.Thread):
         self.socket.close()
 
 def start():
+    """Sets up telnet sockets for the user. Call this method to receive a ready-to-go telnet server mimicking a blackbody controller."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', 9999))
     sock.listen(1)

@@ -18,5 +18,5 @@ doc:
 		mv *.html $(DOCS_PATH) ; \
 	done
 
-test:
+tests:
 	python $(TEST_PATH)/__init__.py

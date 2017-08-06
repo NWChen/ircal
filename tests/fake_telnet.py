@@ -62,9 +62,9 @@ class Daemon(threading.Thread):
 
     def run(self):
         """Main method of this thread. Establishes communication with a telnet client."""
-        self.socket.send("SUCCESSFULLY CONNECTED.\n")
+        self.socket.send("SUCCESSFULLY CONNECTED.\r\n")
         while(True):
-            data = self.socket.recv(1024)
+            data = self.socket.recv(4096)
             response = self.handle(data)
             self.socket.send(response)
         self.socket.close()

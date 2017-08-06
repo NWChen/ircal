@@ -7,7 +7,7 @@ if __name__ == '__main__':
     try:
         all_tests = []
         all_tests.extend(unittest.TestSuite([test_fake_serial.get_tests()]))
-        all_tests.extend(unittest.TestSuite([test_fake_telnet.get_tests()]))
+        #all_tests.extend(unittest.TestSuite([test_fake_telnet.get_tests()]))
         
         for test in all_tests:
             unittest.TextTestRunner().run(test)

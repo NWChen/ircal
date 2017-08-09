@@ -10,7 +10,10 @@ class Blackbody():
             :type addr: String
             :type port: int
         """
-        pass
+        try:
+            self.tn = Telnet(addr, port)  
+        except Exception, e:
+            print 'Unable to connect.\n%s' % e # view com ports
 
     def set_temperature(self, setpoint):
         """Set an absolute temperature setpoint for the blackbody to reach. The controller takes a nontrivial amount of time to saturate before actually reaching this setpoint.

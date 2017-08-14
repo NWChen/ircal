@@ -12,6 +12,7 @@ class Blackbody():
             :type port: int
         """
         self.setpoint = 0.0
+        self.timeout = timeout
         try:
             self.tn = Telnet(addr, port, timeout)
         except Exception, e:
@@ -36,6 +37,23 @@ class Blackbody():
             :returns: Current absolute surface temperature in Celsius.
             :rtype: float
         """
+        pattern = re.compile('.*(\d+[.]\d*).*')
         self.tn.write('M2\r\n')
         response = self.read_until(timeout=self.timeout)
-        
+        exp = pattern.match(response)
+        if exp:
+            return float(exp.group(1))
+        raise ValueError('Blackbody error. Try resetting your connection to the blackbody controller')
+
+    def get_setpoint(self):
+        """Get the current temperature setpoint of the blackbody.
+            :returns: Current temperature setpoint in Celsius.
+            :rtype: float
+        """
+        pattern = re.compile('(\d+[.]\d*)')
+        self.tn.write('M1\r\n')
+        response = self.read_until(timeout=self.timeout)
+        exp = pattern.search(response)
+        if exp:
+            return float(exp.group(1))
+        raise ValueError('Blackbody error. Try resetting your connection to the blackbody controller')

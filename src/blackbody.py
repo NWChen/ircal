@@ -32,7 +32,7 @@ class Blackbody():
         """
         self.tn.write('DA%f\r\n' % setpoint)
         self.setpoint = setpoint
-        if self.read_until(timeout=self.timeout):
+        if self.tn.read_until(timeout=self.timeout):
             return False
         return True
 
@@ -43,7 +43,7 @@ class Blackbody():
         """
         pattern = re.compile('.*(\d+[.]\d*).*')
         self.tn.write('M2\r\n')
-        response = self.read_until(timeout=self.timeout)
+        response = self.tn.read_until(timeout=self.timeout)
         exp = pattern.match(response)
         if exp:
             return float(exp.group(1))
@@ -56,7 +56,7 @@ class Blackbody():
         """
         pattern = re.compile('(\d+[.]\d*)')
         self.tn.write('M1\r\n')
-        response = self.read_until(timeout=self.timeout)
+        response = self.tn.read_until(timeout=self.timeout)
         exp = pattern.search(response)
         if exp:
             return float(exp.group(1))

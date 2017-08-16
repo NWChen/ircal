@@ -36,5 +36,15 @@ class FakeSystemTestCase(unittest.TestCase):
             print current_temp
         return True
 
+    def test_radiometer_blackbody_chatter(self):
+        self.blackbody.set_temperature(1.1)
+        current_temp = self.blackbody.get_temperature()
+        while(current_temp > 1.1):
+            self.serial.responder.device_values['temp'] = str(current_temp) # send blackbody temperature to radiometer
+            time.sleep(0.2)
+            current_temp = self.blackbody.get_temperature()
+            print self.radiometer.get_temperature
+        return True
+
 if __name__ == '__main__':
     sys.exit(unittest.main())

@@ -19,6 +19,10 @@ class Blackbody():
             print 'Unable to connect.\n%s' % e # view com ports
             self.tn = None
 
+    def close(self):
+        """Close connection to Telnet server, in this case the blackbody controller."""
+        self.tn.close()
+
     def set_temperature(self, setpoint):
         """Set an absolute temperature setpoint for the blackbody to reach. The controller takes a nontrivial amount of time to saturate before actually reaching this setpoint.
             :param setpoint: Temperature in Celsius.

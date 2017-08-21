@@ -32,7 +32,7 @@ class Blackbody():
         """
         self.tn.write('DA%f\r\n' % setpoint)
         self.setpoint = setpoint
-        if self.tn.read_until(timeout=self.timeout):
+        if self.tn.read_until('\r\n', timeout=self.timeout):
             return False
         return True
 
@@ -41,10 +41,10 @@ class Blackbody():
             :returns: Current absolute surface temperature in Celsius.
             :rtype: float
         """
-        pattern = re.compile('.*(\d+[.]\d*).*')
+        pattern = re.compile('(\d+[.]\d*)')
         self.tn.write('M2\r\n')
-        response = self.tn.read_until(timeout=self.timeout)
-        exp = pattern.match(response)
+        response = self.tn.read_until('\r\n', timeout=self.timeout)
+        exp = pattern.search(response)
         if exp:
             return float(exp.group(1))
         raise ValueError('Blackbody error. Try resetting your connection to the blackbody controller')
@@ -56,7 +56,7 @@ class Blackbody():
         """
         pattern = re.compile('(\d+[.]\d*)')
         self.tn.write('M1\r\n')
-        response = self.tn.read_until(timeout=self.timeout)
+        response = self.tn.read_until('\r\n', timeout=self.timeout)
         exp = pattern.search(response)
         if exp:
             return float(exp.group(1))

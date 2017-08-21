@@ -34,6 +34,7 @@ class FakeSystemTestCase(unittest.TestCase):
             time.sleep(0.2)
             current_temp = self.blackbody.get_temperature()
             print current_temp
+        import pdb; pdb.set_trace()
         return True
 
     def test_radiometer_blackbody_chatter(self):
@@ -44,6 +45,7 @@ class FakeSystemTestCase(unittest.TestCase):
             time.sleep(0.2)
             current_temp = self.blackbody.get_temperature()
             print self.radiometer.get_temperature
+        import pdb; pdb.set_trace()
         return True
 
 if __name__ == '__main__':

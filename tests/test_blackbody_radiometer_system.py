@@ -10,7 +10,8 @@ from blackbody import Blackbody
 
 class FakeSystemTestCase(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         try:
             self.nbd = NonBlockingDaemon()
         except Exception as e:
@@ -22,7 +23,8 @@ class FakeSystemTestCase(unittest.TestCase):
         self.radiometer = Radiometer(self.serial)
         self.blackbody = Blackbody(addr='localhost', port=9999)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
         self.blackbody.close()
         if self.serial.is_open:
             self.serial.close()
